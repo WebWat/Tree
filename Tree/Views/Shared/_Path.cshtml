@@ -8,8 +8,8 @@
     {
         if (!string.IsNullOrEmpty(item))
         {
-            test += item + "/";
-            <a href="/tree/@(test)">@item</a>
+            test += "/" + item;
+            <a href="/tree@(test)">@item</a>
             <b>/</b>
         }
     }

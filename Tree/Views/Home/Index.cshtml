@@ -5,7 +5,10 @@
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    @if (Model.BeenBefore)
+    {
+        <p>Your tree url: <a href="/tree/@Model.SessinId">@Model.SessinId</a></p>
+    }
 </div>
 
 <form asp-action="Upload" asp-controller="Home" method="post" enctype="multipart/form-data">

@@ -4,7 +4,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddDistributedMemoryCache();
-builder.Services.AddSession();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromSeconds(3600);
+    options.Cookie.IsEssential = true;
+});
 
 var app = builder.Build();
 
@@ -48,4 +52,7 @@ app.Run();
 public class Test
 {
     public IFormFile file { get; set; }
+    public bool BeenBefore { get; set; }
+
+    public string SessinId { get; set; }
 }
