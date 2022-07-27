@@ -1,0 +1,19 @@
+﻿@model Test
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+
+<form asp-action="Upload" asp-controller="Home" method="post" enctype="multipart/form-data">
+    <p>
+        <label>Zip</label>
+        <input asp-for="file" type="file" class="form-control" accept="application/zip"/>
+    </p>
+    <p>
+        <input type="submit" value="Добавить" class="btn btn-primary"/>
+    </p>
+</form>

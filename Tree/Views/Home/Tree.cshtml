@@ -1,0 +1,20 @@
+﻿@model FilesInfo
+@{
+    ViewData["Title"] = "Tree";
+}
+
+<partial name="_Path" model="Model.CurrentPath" />
+
+<ul class="list-group">
+    @foreach (var item in Model.Files)
+    {
+        @if (item.IsFolder)
+        {
+            <li class="list-group-item"><a href="/tree/@(Model.CurrentPath + "/" + item.Name)">@item.Name</a></li>
+        }
+        else
+        {
+            <li class="list-group-item">@item.Name</li>
+        }
+    }
+</ul>

@@ -1,0 +1,16 @@
+﻿@model string
+@{
+    string test = string.Empty;
+}
+
+<p>
+    @foreach (var item in Model.Split("/"))
+    {
+        if (!string.IsNullOrEmpty(item))
+        {
+            test += item + "/";
+            <a href="/tree/@(test)">@item</a>
+            <b>/</b>
+        }
+    }
+</p>
