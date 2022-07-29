@@ -1,4 +1,6 @@
 
+using System.Text;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -9,6 +11,8 @@ builder.Services.AddSession(options =>
     options.IdleTimeout = TimeSpan.FromSeconds(3600);
     options.Cookie.IsEssential = true;
 });
+
+Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
 var app = builder.Build();
 
@@ -48,11 +52,3 @@ app.UseEndpoints(endpoints =>
 });
 
 app.Run();
-
-public class Test
-{
-    public IFormFile file { get; set; }
-    public bool BeenBefore { get; set; }
-
-    public string SessinId { get; set; }
-}

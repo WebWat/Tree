@@ -1,4 +1,4 @@
-﻿@model Test
+﻿@model IndexModel
 @{
     ViewData["Title"] = "Home Page";
 }
@@ -14,7 +14,7 @@
 <form asp-action="Upload" asp-controller="Home" method="post" enctype="multipart/form-data">
     <p>
         <label>Zip</label>
-        <input asp-for="file" type="file" class="form-control" accept="application/zip"/>
+        <input asp-for="File" type="file" class="form-control" accept="application/zip"/>
     </p>
     <p>
         <input type="submit" value="Добавить" class="btn btn-primary"/>
