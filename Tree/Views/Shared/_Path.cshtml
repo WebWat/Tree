@@ -1,6 +1,6 @@
 ﻿@model string
 @{
-    string test = string.Empty;
+    string path = string.Empty;
 }
 
 <p>
@@ -8,8 +8,8 @@
     {
         if (!string.IsNullOrEmpty(item))
         {
-            test += "/" + item;
-            <a href="/tree@(test)">@item</a>
+            path += "/" + item;
+            <a href="/tree@(path)">@item</a>
             <b>/</b>
         }
     }
