@@ -11,12 +11,14 @@ namespace Tree.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IWebHostEnvironment _appEnvironment;
-        private const string _path = @"C:\Users\sereg\source\repos\Tree\Tree\wwwroot\Files\";
+        private readonly string _path;
 
         public HomeController(ILogger<HomeController> logger, IWebHostEnvironment appEnvironment)
         {
             _logger = logger;
             _appEnvironment = appEnvironment;
+
+            _path = appEnvironment.WebRootPath + @"\Files\";
         }
 
         public IActionResult Index()
@@ -83,6 +85,10 @@ namespace Tree.Controllers
 
                 if (Directory.Exists(_userPath))
                 {
+                    var temp = GetSessionId();
+                    HttpContext.Session.Clear();
+                    HttpContext.Session.SetString("Id", temp);
+
                     ClearFolder(_userPath);
                     Directory.Delete(_userPath);
                 }
@@ -115,7 +121,11 @@ namespace Tree.Controllers
 
         private string GetSessionId()
         {
-            return HttpContext.Session.GetString("Id");
+            string? value = HttpContext.Session.GetString("Id");
+
+            ArgumentNullException.ThrowIfNull(value);
+
+            return value;
         }
 
         private string GetSize(long length)
