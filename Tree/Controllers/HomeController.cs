@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.IO.Compression;
 using System.Text;
@@ -25,29 +26,37 @@ namespace Tree.Controllers
         {
             var sessionId = GetSessionId();
 
-            if (!HttpContext.Session.TryGetValue(sessionId, out _))
+            string? value = HttpContext.Session.GetString(sessionId);
+
+            if (string.IsNullOrEmpty(value))
             {
-                return View(new IndexModel { BeenBefore = false });
+                return View(new IndexModel());
             }
 
-            return View(new IndexModel { BeenBefore = true, SessinId = sessionId });
+            return View(new IndexModel { SessionId = sessionId });
         }
 
+
         [ResponseCache(Location = ResponseCacheLocation.Client, Duration = 60 * 10)]
-        public IActionResult Tree(string path)
+        public async Task<IActionResult> Tree(string path)
         {
-            if (!HttpContext.Session.TryGetValue(GetSessionId(), out _))
-            {
-                return RedirectToAction(nameof(Index));
-            }
+            await HttpContext.Session.LoadAsync();
 
             string? value = HttpContext.Session.GetString(path);
 
-            ArgumentNullException.ThrowIfNull(value);
+            if (string.IsNullOrEmpty(value))
+            {
+                _logger.LogWarning("Incorrect session!");
+                return RedirectToAction(nameof(Index));
+            }
 
             return View(JsonSerializer.Deserialize<FilesInfo>(value));
         }
 
+        public IActionResult Upload()
+        {
+            return View();
+        }
 
         [HttpPost]
         [RequestSizeLimit(100 * 1024 * 1024)]
@@ -55,6 +64,8 @@ namespace Tree.Controllers
         {
             if (im.File != null)
             {
+                await HttpContext.Session.LoadAsync();
+
                 var _userPath = Path.Combine(_path, GetSessionId());
                 var temp = GetSessionId();
 
@@ -65,6 +76,10 @@ namespace Tree.Controllers
                     temp = Guid.NewGuid().ToString();
 
                     HttpContext.Session.SetString("Id", temp);
+
+                    _logger.LogInformation("Create new id: " + temp);
+
+                    _userPath = _userPath.Remove(_userPath.Length - 36) + temp;
                 }
 
                 Directory.CreateDirectory(_userPath);
@@ -88,21 +103,23 @@ namespace Tree.Controllers
 
                 _logger.LogInformation($"Uploaded and extracted! Total time: {stopwatch.ElapsedMilliseconds / 1000d:f3} s.");
 
-                _logger.LogInformation("Save data in the session delete all downloaded data..");
+                _logger.LogInformation("Save data in the session and delete all downloaded data..");
 
                 stopwatch.Restart();
 
                 System.IO.File.Delete(zipPath);
-                AddToSessionStorage(_userPath);
+                AddToSessionStorage(temp);
                 ClearFolder(_userPath);
                 Directory.Delete(_userPath);
 
                 _logger.LogInformation($"Loaded and cleared! Total time: {stopwatch.ElapsedMilliseconds / 1000d:f3} s.");
 
+                await HttpContext.Session.CommitAsync();
+
                 return RedirectToAction("tree", new { path = temp });
             }
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("index");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -151,7 +168,7 @@ namespace Tree.Controllers
             }
         }
 
-        private void AddToSessionStorage(string path)
+        private void AddToSessionStorage(string id)
         {
             FilesInfo item;
 
@@ -190,7 +207,7 @@ namespace Tree.Controllers
                 }
             }
 
-            SetFolder(path.Split("\\").Last());
+            SetFolder(id);
         }
     }
 }

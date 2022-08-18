@@ -5,18 +5,18 @@
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
-    @if (Model.BeenBefore)
+    @if (!string.IsNullOrEmpty(Model.SessionId))
     {
-        <p>Your tree url: <a href="/tree/@Model.SessinId">@Model.SessinId</a></p>
+        <p>Your tree url: <a href="/tree/@Model.SessionId">@Model.SessionId</a></p>
     }
 </div>
 
 <form asp-action="Upload" asp-controller="Home" method="post" enctype="multipart/form-data">
     <p>
         <label>Zip</label>
-        <input asp-for="File" type="file" class="form-control" accept="application/zip"/>
+        <input asp-for="File" type="file" class="form-control" accept="application/zip" />
     </p>
     <p>
-        <input type="submit" value="Добавить" class="btn btn-primary"/>
+        <input type="submit" value="Add" class="btn btn-primary" />
     </p>
 </form>

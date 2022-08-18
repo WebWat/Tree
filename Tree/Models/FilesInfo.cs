@@ -2,7 +2,7 @@
 {
     public class FilesInfo
     {
-        public string CurrentPath { get; set; }
-        public IEnumerable<File> Files { get; set; }
+        public string CurrentPath { get; set; } = default!;
+        public IEnumerable<File>? Files { get; set; }
     }
 }
