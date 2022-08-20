@@ -1,6 +1,8 @@
 ## About this project
 A simple file browser written in ASP.NET Core using **MVC architecture** and **sessions**.
 
+![browser](https://github.com/WebWat/Tree/blob/master/Imgs/browser.png)
+
 ## How it works
 In the readme the methods is slightly simplified for general understanding!
 
@@ -9,14 +11,14 @@ The process of interaction with the application will look like this:
      
      >> We do this to create a new Id (if the user has already upload), 
         because the main `Tree` method, which displays the files on the site, uses the [ResponseCache](https://docs.microsoft.com/en-us/aspnet/core/performance/caching/response?view=aspnetcore-6.0#responsecache-attribute) attribute. 
-        If we use the old Id, the Tree method will redirect us to the old files.
+        If we use the old Id, the `Tree` method will redirect us to the old files.
      
      Next we need to load the unzipped data into a hash table (e.g. folder names, file names, paths, etc.) and delete files from the server.
      
      >> Why do we need to remove them from the server? 
         Because each client's files will take up a lot of space, and it is quite problematic to delete them after the session is over.
        
-     Methods AddToSessionStorage and ClearFolder you can see in detail in the code.
+     Methods [AddToSessionStorage](https://github.com/WebWat/Tree/blob/355ec9b189729a85cbdb3dd69a13f1c181c75021/Tree/Controllers/HomeController.cs#L178) and [ClearFolder](https://github.com/WebWat/Tree/blob/355ec9b189729a85cbdb3dd69a13f1c181c75021/Tree/Controllers/HomeController.cs#L167) you can see in detail in the code.
         
      ``` csharp
       // The methods is slightly simplified for general understanding.
@@ -51,7 +53,9 @@ The process of interaction with the application will look like this:
                   await im.File.CopyToAsync(fileStream);
               }
 
-              ZipFile.ExtractToDirectory(zipPath, _userPath, entryNameEncoding:
+              ZipFile.ExtractToDirectory(zipPath, _userPath, 
+                  // https://stackoverflow.com/questions/32402791/unzipping-with-extracttodirectory-method-distorts-non-latin-symbols
+                  entryNameEncoding:
                   Encoding.GetEncoding(System.Globalization.CultureInfo.CurrentCulture.TextInfo.OEMCodePage));
 
               System.IO.File.Delete(zipPath);
