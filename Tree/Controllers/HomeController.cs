@@ -69,6 +69,7 @@ namespace Tree.Controllers
                 var _userPath = Path.Combine(_path, GetSessionId());
                 var temp = GetSessionId();
 
+                // If the user downloads a new archive, create a new Id (because the data is cached).
                 if (HttpContext.Session.TryGetValue(temp, out _))
                 {
                     HttpContext.Session.Clear();
@@ -96,7 +97,9 @@ namespace Tree.Controllers
                     await im.File.CopyToAsync(fileStream);
                 }
 
-                ZipFile.ExtractToDirectory(zipPath, _userPath, entryNameEncoding:
+                ZipFile.ExtractToDirectory(zipPath, _userPath,
+                    // https://stackoverflow.com/questions/32402791/unzipping-with-extracttodirectory-method-distorts-non-latin-symbols
+                    entryNameEncoding:
                     Encoding.GetEncoding(System.Globalization.CultureInfo.CurrentCulture.TextInfo.OEMCodePage));
 
                 stopwatch.Stop();
@@ -107,8 +110,12 @@ namespace Tree.Controllers
 
                 stopwatch.Restart();
 
+
                 System.IO.File.Delete(zipPath);
+
                 AddToSessionStorage(temp);
+
+                // Clear all unzipped data and delete the folder itself.
                 ClearFolder(_userPath);
                 Directory.Delete(_userPath);
 
