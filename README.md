@@ -90,9 +90,4 @@ The process of interaction with the application will look like this:
           return View(JsonSerializer.Deserialize<FilesInfo>(value));
       }
      ```
-
-## Contributing
-Ask any questions and submit pull requests that will help make this project better!
-  
-  
   
